@@ -32,8 +32,8 @@ import QBAIAnswerAssistant
 2. Create an array of `Message` objects representing the chat history:
 
 ```swift
-let message1 = OwnerMessage(content: "Hi there, how can I help you today?")
-let message2 = OpponentMessage(content: "I need help with the iOS UI Kit. How do I set it up? ")
+let message1 = OwnerMessage("Hi there, how can I help you today?")
+let message2 = OpponentMessage("I need help with the iOS UI Kit. How do I set it up? ")
 let messages = [message1, message2]
 ```
 

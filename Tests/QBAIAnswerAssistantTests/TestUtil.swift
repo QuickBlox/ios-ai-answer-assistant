@@ -11,11 +11,11 @@ import Foundation
 
 struct Test {
     static var messages: [Message] = [
-        OwnerMessage(content: "Hi. let me check..."),
-        OpponentMessage(content: "Can we have a call today evening?"),
-        OpponentMessage(content: "I've a question about your job"),
-        OpponentMessage(content: "How are you?"),
-        OpponentMessage(content: "Hello"),
+        OwnerMessage("Hi. let me check..."),
+        OpponentMessage("Can we have a call today evening?"),
+        OpponentMessage("I've a question about your job"),
+        OpponentMessage("How are you?"),
+        OpponentMessage("Hello"),
     ]
     
     static var token: String = "sk-8e9a7bc0-12ab-34cd-56ef-7890gh123i45"

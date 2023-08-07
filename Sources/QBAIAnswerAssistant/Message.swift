@@ -18,6 +18,7 @@ public enum Role {
 public protocol Message {
     var role: Role { get }
     var content: String { get }
+    init(_ content: String)
 }
 
 /// Represents a message from the owner in the chat.
@@ -26,6 +27,9 @@ public struct OwnerMessage: Message {
     
     public let content: String
     
+    public init(_ content: String) {
+        self.content = content
+    }
 }
 
 /// Represents a message from the opponent in the chat.
@@ -33,4 +37,8 @@ public struct OpponentMessage: Message {
     private (set) public var role: Role = .opponent
     
     public let content: String
+    
+    public init(_ content: String) {
+        self.content = content
+    }
 }
