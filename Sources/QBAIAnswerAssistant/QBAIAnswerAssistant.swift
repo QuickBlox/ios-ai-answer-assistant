@@ -3,20 +3,24 @@
 //  Created by Injoit on 19.05.2023.
 //  Copyright © 2023 QuickBlox. All rights reserved.
 //
+// `QBAIAnswerAssistant` helps generate an answer in a chat based on the history of correspondence. Generation is carried out using the OpenAI model. There are two ways to generate responses: one is direct OpenAI API requests using a key, and the second is proxy requests using a QuickBlox user token. The second method organizes a more secure communication channel by saving the keys from OpenAI on the server and checking through the QuickBlox instance that the request is made by the user and not by an attacker.
 
 import Foundation
 
 /// Represents the settings used for QBAIAnswerAssistant.
 public struct Settings {
     /// The minimum number of messages required to generate a response.
-    public static var minMessageCount: Int = 1
+    public var minMessageCount: Int = 1
     
     /// The maximum token count allowed for message processing.
-    public static var maxTokenCount: Int = 3500
+    public var maxTokenCount: Int = 3500
     
     /// Settings for OpenAI model usage.
-    public static var openAI: OpenAISettings = OpenAISettings()
+    public var openAI: OpenAISettings = OpenAISettings()
 }
+
+/// Represents the settings used for QBAIAnswerAssistant.
+public var settings = QBAIAnswerAssistant.Settings()
 
 /// Represents the various exceptions that can be thrown by `QBAIAnswerAssistant`.
 public enum QBAIAnswerAssistantException: Error {
@@ -35,7 +39,7 @@ extension QBAIAnswerAssistantException: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .incorrectToken: return "The token has incorrect value"
-        case .incorrectMessageCount: return "The minimal messages count should be more then \(Settings.minMessageCount)"
+        case .incorrectMessageCount: return "The minimal messages count should be more then \(settings.minMessageCount)"
         case .incorrectProxyServerUrl: return "The serverUrl has incorrect value"
         }
     }
@@ -51,9 +55,7 @@ extension String {
     }
 }
 
-/// `QBAIAnswerAssistant` helps generate an answer in a chat based on the history of correspondence. Generation is carried out using the OpenAI model. There are two ways to generate responses: one is direct OpenAI API requests using a key, and the second is proxy requests using a QuickBlox user token. The second method organizes a more secure communication channel by saving the keys from OpenAI on the server and checking through the QuickBlox instance that the request is made by the user and not by an attacker.
-open class QBAIAnswerAssistant {
-    public static var dependency: DependencyProtocol = Dependency()
+public var dependency: DependencyProtocol = Dependency()
     
     /**
      Generates an answer using the OpenAI API by making direct requests with the provided API key.
@@ -66,21 +68,21 @@ open class QBAIAnswerAssistant {
      
      - Throws: A `QBAIAnswerAssistantException` if an error occurs during the request or validation.
      */
-    public static func openAIAnswer(to messages: [Message],
+public func openAIAnswer(to messages: [Message],
                                     secret apiKey: String) async throws -> String {
         if apiKey.isNotCorrect {
             throw QBAIAnswerAssistantException.incorrectToken
         }
         
         let filtered = filter(messages: messages)
-        if filtered.count < Settings.minMessageCount {
+    if filtered.count < settings.minMessageCount {
             throw QBAIAnswerAssistantException.incorrectMessageCount
         }
         
         let answer =
         try await dependency.restSource.requestOpenAIAnswer(to: messages,
                                                             key: apiKey,
-                                                            apply: Settings.openAI)
+                                                            apply: settings.openAI)
         
         return answer
     }
@@ -119,7 +121,7 @@ open class QBAIAnswerAssistant {
     ///
     /// - Returns: The generated answer as a String.
     ///
-    public static func openAIAnswer(to messages: [Message],
+public func openAIAnswer(to messages: [Message],
                                     qbToken: String,
                                     proxy urlPath: String) async throws -> String {
         if qbToken.isNotCorrect {
@@ -131,7 +133,7 @@ open class QBAIAnswerAssistant {
         }
         
         let filtered = filter(messages: messages)
-        if filtered.count < Settings.minMessageCount {
+        if filtered.count < settings.minMessageCount {
             throw QBAIAnswerAssistantException.incorrectMessageCount
         }
         
@@ -139,12 +141,11 @@ open class QBAIAnswerAssistant {
         try await dependency.restSource.requestOpenAIAnswer(to: messages,
                                                             token: qbToken,
                                                             proxy: urlPath,
-                                                            apply: Settings.openAI)
+                                                            apply: settings.openAI)
         return answer
     }
     
-    private static func filter(messages: [Message]) -> [Message] {
+private func filter(messages: [Message]) -> [Message] {
         return dependency.tokenizer.extract(messages: messages,
-                                            byTokenLimit: Settings.maxTokenCount)
+                                            byTokenLimit: settings.maxTokenCount)
     }
-}
