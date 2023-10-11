@@ -22,13 +22,13 @@ final class TokenizerTests: XCTestCase {
     }
     
     func testHas5messages_extractMessagesByTokenLimit_received5Messages() {
-        let extractedMessages = Tokenizer().extract(messages: Test.messages)
+        let extractedMessages = Tokenizer().extract(messages: Test.messages, byTokenLimit: 3000)
         XCTAssertEqual(extractedMessages.count, 5)
     }
     
     func testHas5Messages_extractMessagesByTokenLimitWithTokensMaxCount5_received2Messages() {
         let extractedMessages = Tokenizer().extract(messages: Test.messages,
-                                                    byTokenLimit: 5)
+                                                    byTokenLimit: 30)
         XCTAssertEqual(extractedMessages.count, 1)
     }
 }

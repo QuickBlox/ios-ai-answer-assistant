@@ -13,9 +13,10 @@ final class ExecuteAnswerByOpenAITests: XCTestCase {
     
     func testHasMessages_executeByOpenAIToken_returnAnswers() async {
         do {
+            let settings = AISettings(apiKey: Config.openAIToken)
+            
             let answers = try await
-            QBAIAnswerAssistant.openAIAnswer(to: Test.messages,
-                                             secret: Config.openAIToken)
+            QBAIAnswerAssistant.createAnswer(to: Test.messages, using: settings)
             print(answers)
             XCTAssertFalse(answers.isEmpty)
         } catch {
@@ -27,10 +28,10 @@ final class ExecuteAnswerByOpenAITests: XCTestCase {
     // The repository is: https://github.com/QuickBlox/qb-ai-assistant-proxy-server
     func testHasMessages_executeByProxy_returnAnswers() async {
         do {
+            let settings = AISettings(token: Config.qbToken,
+                                      serverPath: "http://localhost:3000")
             let answers = try await
-            QBAIAnswerAssistant.openAIAnswer(to: Test.messages,
-                                             qbToken: Config.qbToken,
-                                             proxy: "http://localhost:3000")
+            QBAIAnswerAssistant.createAnswer(to: Test.messages, using: settings)
             print(answers)
             XCTAssertFalse(answers.isEmpty)
         } catch {
