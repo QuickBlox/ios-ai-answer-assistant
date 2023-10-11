@@ -1,7 +1,7 @@
 <div align="center">
 
 <p>
-        <a href="https://discord.gg/Yc56F9KG"><img src="https://img.shields.io/discord/1042743094833065985?color=5865F2&logo=discord&logoColor=white&label=QuickBlox%20Discord%20server&style=for-the-badge" alt="Discord server" /></a>
+        <a href="https://discord.gg/bDyKXGAQRu"><img src="https://img.shields.io/discord/1042743094833065985?color=5865F2&logo=discord&logoColor=white&label=QuickBlox%20Discord%20server&style=for-the-badge" alt="Discord server" /></a>
 </p>
 
 </div>
@@ -32,20 +32,20 @@ import QBAIAnswerAssistant
 2. Create an array of `Message` objects representing the chat history:
 
 ```swift
-let message1 = OwnerMessage("Hi there, how can I help you today?")
-let message2 = OpponentMessage("I need help with the iOS UI Kit. How do I set it up? ")
+let message1 = AIMessage(role: .me, text: "Hi there, how can I help you today?")
+let message2 = AIMessage(role: .other, text: "I need help with the iOS Swift Package. How do I set it up? ")
 let messages = [message1, message2]
 ```
 
-3. Call the `openAIAnswer` method to generate an answer using an API key:
+3. Call the `createAnswer` method to generate an answer using an API key:
 
 ```swift
 do {
-let apiKey = "YOUR_OPENAI_API_KEY"
-let answer = try await QBAIAnswerAssistant.openAIAnswer(to: messages, secret: apiKey)
-print("Generated Answer: \(answer)")
+    let settings = AISettings(apiKey: "YOUR_OPENAI_API_KEY")
+    let answer = try await QBAIAnswerAssistant.createAnswer(to: messages, using: settings)
+    print("Generated Answer: \(answer)")
 } catch {
-print("Error: \(error)")
+    print("Error: \(error)")
 }
 ```
 
@@ -53,12 +53,13 @@ Alternatively, you can use a QuickBlox user token and a proxy URL for more secur
 
 ```swift
 do {
-let qbToken = "YOUR_QUICKBLOX_USER_TOKEN"
-let proxyURL = "https://your-proxy-server-url"
-let answer = try await QBAIAnswerAssistant.openAIAnswer(to: messages, qbToken: qbToken, proxy: proxyURL)
-print("Generated Answer: \(answer)")
+    let qbToken = "YOUR_QUICKBLOX_USER_TOKEN"
+    let proxyURL = "https://your-proxy-server-url"
+    let settings = AISettings(token: qbToken, serverPath: proxyURL)
+    let answer = try await QBAIAnswerAssistant.createAnswer(to: messages, using: settings)
+    print("Generated Answer: \(answer)")
 } catch {
-print("Error: \(error)")
+    print("Error: \(error)")
 }
 ```
 
@@ -101,6 +102,6 @@ QBAIAnswerAssistant is released under the [MIT License](LICENSE).
 ## Contribution
 
 We welcome contributions to improve QBAIAnswerAssistant. If you find any issues or have suggestions, feel free to open an issue or submit a pull request on GitHub.
-Join our Discord Server: https://discord.gg/Yc56F9KG
+Join our Discord Server: https://discord.gg/bDyKXGAQRu
 
 Happy coding! 🚀

@@ -11,6 +11,16 @@ import Foundation
 /// Represents the protocol for tokenizing messages and extracting a subset of messages based on token count.
 public protocol TokenizerProtocol {
     /**
+     Parses the token count from the provided content using CFStringTokenizer.
+     
+     - Parameters:
+        - content: The content string to be tokenized.
+     
+     - Returns: The token count in the content string.
+     */
+    func parseTokensCount(from content: String) -> Int
+    
+    /**
      Extracts a subset of messages based on the provided maximum token count.
      
      - Parameters:
@@ -19,8 +29,8 @@ public protocol TokenizerProtocol {
      
      - Returns: A filtered array of Message objects containing a subset of messages.
      */
-    func extract(messages: [Message],
-                        byTokenLimit maxCount: Int) -> [Message]
+    func extract<M>(messages: [M]?,
+                    byTokenLimit maxCount: Int) -> [M] where M: Message
 }
 
 /// Represents the default implementation of TokenizerProtocol using CFStringTokenizer to tokenize messages.
@@ -34,13 +44,16 @@ open class Tokenizer: TokenizerProtocol {
      
      - Returns: A filtered array of Message objects containing a subset of messages.
      */
-    public func extract(messages: [Message],
-                               byTokenLimit maxCount: Int = 3500) -> [Message] {
-        var tokensCount = 0
-        var extractedMessages = [Message]()
+    public func extract<M>(messages: [M]?,
+                           byTokenLimit maxCount: Int) -> [M] where M: Message {
+        guard let messages = messages else { return [] }
+        if messages.isEmpty { return [] }
         
-        for message in messages {
-            let messageContent = message.content
+        var tokensCount = 0
+        var extractedMessages: [M] = []
+        
+        for message in messages.reversed() {
+            let messageContent = message.text
             tokensCount += parseTokensCount(from: messageContent)
             if tokensCount >= maxCount {
                 break
@@ -48,7 +61,7 @@ open class Tokenizer: TokenizerProtocol {
             extractedMessages.append(message)
         }
         
-        return extractedMessages
+        return extractedMessages.reversed()
     }
     
     /**
@@ -59,7 +72,7 @@ open class Tokenizer: TokenizerProtocol {
      
      - Returns: The token count in the content string.
      */
-    func parseTokensCount(from content: String) -> Int {
+    public func parseTokensCount(from content: String) -> Int {
         var tokensCount = 0
         
         let tokenizer = CFStringTokenizerCreate(
